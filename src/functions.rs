@@ -1,12 +1,46 @@
 use crate::board::ColorBoards;
-use core::arch::x86_64::_pext_u64;
 
-pub fn extract_bits(data: u64, mask: u64) -> u64 {
-    if is_x86_feature_detected!("bmi2") {
-        unsafe { _pext_u64(data, mask) }
-    } else {
-        0
+pub const fn pext(blockers: u64, moves: u64) -> u64 {
+    let mut hash = 0;
+
+    let mut c = 0;
+    let mut i = 0;
+    while i < 64 {
+        if (moves >> i) & 1 == 1 {
+            hash |= ((blockers >> i) & 1) << c;
+            c += 1;
+        }
+        i += 1;
     }
+
+    hash
+}
+
+pub const fn pdep(hash: u64, moves: u64) -> u64 {
+    let mut blockers = 0;
+
+    let mut c = 0;
+    let mut i = 0;
+    while i < 64 {
+        if (moves >> i) & 1 == 1 {
+            blockers |= (hash & (1 << c)) << (i - c);
+            c += 1;
+        }
+        i += 1;
+    }
+
+    blockers
+}
+
+pub const fn remove_border(board: u64) -> u64 {
+    let a: u64 = 0x0101010101010101;
+    let h: u64 = a << 7;
+    let c1: u64 = 0xFF;
+    let c8: u64 = c1 << 8 * 7;
+
+    let border = a | h | c1 | c8;
+
+    board & !border
 }
 
 pub fn fen_pos_notation_to_sq_index(pos: &str) -> u64 {
