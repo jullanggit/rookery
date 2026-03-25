@@ -10,7 +10,7 @@ pub struct State {
     pub full_move_clock: usize,
 }
 
-#[derive(Default)]
+#[derive(Default, Clone, Copy)]
 pub struct ColorBoards {
     pub pawn: u64,
     pub rook: u64,
@@ -19,6 +19,26 @@ pub struct ColorBoards {
     pub queen: u64,
     pub king: u64,
     pub all: u64,
+}
+
+pub enum PType {
+    Pawn,
+    Rook,
+    Knight,
+    Bishop,
+    King,
+    Queen,
+}
+
+impl PType {
+    pub fn sliding(&self) -> bool {
+        match self {
+            Self::Rook => true,
+            Self::Bishop => true,
+            Self::Queen => true,
+            _ => false,
+        }
+    }
 }
 
 impl ColorBoards {
@@ -34,7 +54,7 @@ impl Default for State {
 }
 
 impl State {
-    fn from_fen(fen: &str) -> Self {
+    pub fn from_fen(fen: &str) -> Self {
         let parts: Vec<&str> = fen.split_whitespace().collect();
         let (pos, to_move, cast, en_pass, half_move, full_move) =
             (parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);

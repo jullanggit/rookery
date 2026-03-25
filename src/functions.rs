@@ -1,4 +1,13 @@
 use crate::board::ColorBoards;
+use core::arch::x86_64::_pext_u64;
+
+pub fn extract_bits(data: u64, mask: u64) -> u64 {
+    if is_x86_feature_detected!("bmi2") {
+        unsafe { _pext_u64(data, mask) }
+    } else {
+        0
+    }
+}
 
 pub fn fen_pos_notation_to_sq_index(pos: &str) -> u64 {
     if pos.len() != 2 {

@@ -1,7 +1,57 @@
+use crate::{
+    board::{PType, State},
+    functions::extract_bits,
+    qol::display_bit_board,
+};
+
 pub const PSEUDO_ROOK: [u64; 64] = generate_pseudo_rook();
 pub const PSEUDO_BISHOP: [u64; 64] = generate_pseudo_bishop();
 pub const PSEUDO_KNIGHT: [u64; 64] = generate_pseudo_knight();
 pub const PSEUDO_KING: [u64; 64] = generate_pseudo_king();
+
+pub fn get_legal_move(pos_idx: u64, piece: PType, white: bool, state: &State) -> Vec<u16> {
+    let mut moves = Vec::new();
+
+    let board = if white { state.white } else { state.black };
+
+    if piece.sliding() {
+        // let moves =
+        // let blockers_idx = extract_bits(, state.all_pieces)
+    }
+
+    moves
+}
+
+pub fn pawn_moves(pos_idx: u64, white: bool, state: &State) -> u64 {
+    let mut moves: u64 = 0;
+
+    let start_row_after_1st_move: u64 = if white { 0xFF << 16 } else { 0xFF << (8 * 5) };
+
+    let pos_board = 1 << pos_idx;
+
+    let a: u64 = 0x0101010101010101;
+    let h: u64 = a << 7;
+
+    moves |= if white {
+        pos_board << 8
+    } else {
+        pos_board >> 8
+    } & !state.all_pieces;
+
+    moves |= if white {
+        (moves & start_row_after_1st_move & !state.all_pieces) << 8
+    } else {
+        (moves & start_row_after_1st_move & !state.all_pieces) >> 8
+    };
+
+    moves |= if white {
+        ((pos_board & !a) << 7 | ((pos_board & !h) << 9)) & !state.white.all
+    } else {
+        (pos_board & !h) >> 7 | ((pos_board & !a) >> 9) & !state.black.all
+    };
+
+    moves
+}
 
 const fn generate_pseudo_king() -> [u64; 64] {
     let mut attacks: [u64; 64] = [0; 64];
