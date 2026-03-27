@@ -62,9 +62,9 @@ pub fn pawn_moves(pos_idx: u64, white: bool, state: &State) -> u64 {
     };
 
     moves |= if white {
-        ((pos_board & !a) << 7 | ((pos_board & !h) << 9)) & state.black.all
+        ((pos_board & !a) << 7 | ((pos_board & !h) << 9)) & (state.black.all | state.en_passant)
     } else {
-        (pos_board & !h) >> 7 | ((pos_board & !a) >> 9) & state.white.all
+        (pos_board & !h) >> 7 | ((pos_board & !a) >> 9) & (state.white.all | state.en_passant)
     };
 
     moves
