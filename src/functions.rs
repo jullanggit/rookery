@@ -1,4 +1,6 @@
 use crate::board::ColorBoards;
+use crate::board::PType;
+use crate::board::Piece;
 
 pub const fn pext(blockers: u64, moves: u64) -> u64 {
     let mut hash = 0;
@@ -69,7 +71,10 @@ pub fn fen_pos_notation_to_sq_index(pos: &str) -> u64 {
     idx
 }
 
-pub fn fen_positions_to_bitboards(fen: &str) -> (ColorBoards, ColorBoards) {
+pub fn fen_positions_to_bitboards(
+    fen: &str,
+    pieces: &mut Vec<Piece>,
+) -> (ColorBoards, ColorBoards) {
     let mut white = ColorBoards::default();
     let mut black = ColorBoards::default();
 
@@ -86,18 +91,60 @@ pub fn fen_positions_to_bitboards(fen: &str) -> (ColorBoards, ColorBoards) {
                 };
 
                 match c.to_ascii_lowercase() {
-                    'p' => boards.pawn |= 1 << idx,
-                    'r' => boards.rook |= 1 << idx,
-                    'n' => boards.knight |= 1 << idx,
-                    'b' => boards.bishop |= 1 << idx,
-                    'k' => boards.king |= 1 << idx,
-                    'q' => boards.queen |= 1 << idx,
+                    'p' => {
+                        boards.pawn |= 1 << idx;
+                        pieces.push(Piece {
+                            white: c.is_uppercase(),
+                            _type: PType::Pawn,
+                            position_idx: idx,
+                        });
+                    }
+                    'r' => {
+                        boards.rook |= 1 << idx;
+                        pieces.push(Piece {
+                            white: c.is_uppercase(),
+                            _type: PType::Rook,
+                            position_idx: idx,
+                        });
+                    }
+                    'n' => {
+                        boards.knight |= 1 << idx;
+                        pieces.push(Piece {
+                            white: c.is_uppercase(),
+                            _type: PType::Knight,
+                            position_idx: idx,
+                        });
+                    }
+                    'b' => {
+                        boards.bishop |= 1 << idx;
+                        pieces.push(Piece {
+                            white: c.is_uppercase(),
+                            _type: PType::Bishop,
+                            position_idx: idx,
+                        });
+                    }
+                    'k' => {
+                        boards.king |= 1 << idx;
+                        pieces.push(Piece {
+                            white: c.is_uppercase(),
+                            _type: PType::King,
+                            position_idx: idx,
+                        });
+                    }
+                    'q' => {
+                        boards.queen |= 1 << idx;
+                        pieces.push(Piece {
+                            white: c.is_uppercase(),
+                            _type: PType::Queen,
+                            position_idx: idx,
+                        });
+                    }
                     _ => panic!("Invalid piece type"),
                 }
 
                 idx += 1;
             } else {
-                idx += c.to_string().parse::<u8>().expect("expected number");
+                idx += c.to_string().parse::<u64>().expect("expected number");
             }
         }
     }

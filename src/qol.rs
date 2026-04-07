@@ -1,3 +1,5 @@
+use crate::board::Move;
+
 pub fn display_bit_board(x: &u64) {
     let mut text = String::new();
 
@@ -9,4 +11,12 @@ pub fn display_bit_board(x: &u64) {
     }
 
     println!("{text}\n\n");
+}
+
+pub fn display_move(x: Move) {
+    let from = 0b1111 & x;
+    let to = 0b11110000 & x;
+
+    let board = (1 << from) | (1 << to);
+    display_bit_board(&board);
 }
