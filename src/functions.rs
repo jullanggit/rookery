@@ -2,36 +2,66 @@ use crate::board::ColorBoards;
 use crate::board::PType;
 use crate::board::Piece;
 
-pub const fn pext(blockers: u64, moves: u64) -> u64 {
-    let mut hash = 0;
+#[cfg(target_arch = "x86_64")]
+use std::arch::x86_64::_pext_u64;
 
-    let mut c = 0;
-    let mut i = 0;
-    while i < 64 {
-        if (moves >> i) & 1 == 1 {
-            hash |= ((blockers >> i) & 1) << c;
-            c += 1;
+pub fn pext(blockers: u64, moves: u64) -> u64 {
+    if is_x86_feature_detected!("bmi2") {
+        unsafe {
+            return _pext_u64(blockers, moves);
+            // Result: 1001 (Extracts bits 7, 6, 1, and 0 from value)
         }
-        i += 1;
-    }
+    } else {
+        let mut hash = 0;
 
-    hash
+        let mut c = 0;
+        let mut i = 0;
+        while i < 64 {
+            if (moves >> i) & 1 == 1 {
+                hash |= ((blockers >> i) & 1) << c;
+                c += 1;
+            }
+            i += 1;
+        }
+
+        hash
+    }
 }
 
-pub const fn pdep(hash: u64, moves: u64) -> u64 {
-    let mut blockers = 0;
+pub const fn remove_border_rook(board: u64, idx: u8) -> u64 {
+    let a: u64 = 0x0101010101010101;
+    let h: u64 = a << 7;
+    let c1: u64 = 0xFF;
+    let c8: u64 = c1 << 8 * 7;
 
-    let mut c = 0;
-    let mut i = 0;
-    while i < 64 {
-        if (moves >> i) & 1 == 1 {
-            blockers |= (hash & (1 << c)) << (i - c);
-            c += 1;
-        }
-        i += 1;
+    let p: u64 = 1 << idx;
+    let mut num = 0;
+
+    if p & c1 != 0 {
+        num += 1;
+    }
+    if p & a != 0 {
+        num += 2;
+    }
+    if p & c8 != 0 {
+        num += 4;
+    }
+    if p & h != 0 {
+        num += 7;
     }
 
-    blockers
+    board
+        & !match num {
+            1 => a | h | c8,
+            2 => h | c1 | c8,
+            3 => h | c8,
+            4 => a | h | c1,
+            6 => h | c1,
+            7 => a | c1 | c8,
+            8 => a | c8,
+            11 => a | c8,
+            _ => a | h | c1 | c8,
+        }
 }
 
 pub const fn remove_border(board: u64) -> u64 {

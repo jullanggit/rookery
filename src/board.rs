@@ -44,7 +44,7 @@ pub enum PType {
     Queen,
 }
 
-// XX-0000-0000-0000
+// 0000-000000-000000
 //    prom to   from
 pub type Move = u16;
 
@@ -55,8 +55,8 @@ pub fn get_moves_from_move_board(mut move_board: u64, idx: u64) -> Vec<Move> {
 
     while move_board != 0 {
         // trailing_zeros() returns the index of the lowest set bit
-        let index = move_board.trailing_zeros();
-        indices.push(index);
+        let trail = move_board.trailing_zeros();
+        indices.push(trail);
 
         // Clear the lowest set bit (Brian Kernighan's algorithm)
         move_board &= move_board - 1;
@@ -64,7 +64,7 @@ pub fn get_moves_from_move_board(mut move_board: u64, idx: u64) -> Vec<Move> {
 
     for index in indices {
         let from = idx as u16;
-        let to = (index as u16) << 4;
+        let to = (index as u16) << 6;
         moves.push(from | to);
     }
 

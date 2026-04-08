@@ -14,8 +14,8 @@ pub fn display_bit_board(x: &u64) {
 }
 
 pub fn display_move(x: Move) {
-    let from = 0b1111 & x;
-    let to = 0b11110000 & x;
+    let from = 0b111111 & x;
+    let to = (0b111111000000 & x) >> 6;
 
     let board = (1 << from) | (1 << to);
     display_bit_board(&board);
