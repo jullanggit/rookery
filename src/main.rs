@@ -24,5 +24,5 @@ include!(concat!(env!("OUT_DIR"), "/tables.rs"));
 fn main() {
     let mut state = State::default();
 
-    let all_moves = state.get_all_moves();
+    let (white_moves, black_moves) = state.get_all_moves();
 }

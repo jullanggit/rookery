@@ -132,14 +132,20 @@ impl State {
         }
     }
 
-    pub fn get_all_moves(&self) -> Vec<Move> {
-        let mut moves = Vec::new();
+    pub fn get_all_moves(&self) -> (Vec<Move>, Vec<Move>) {
+        let mut white_moves = Vec::new();
+        let mut black_moves = Vec::new();
 
         for piece in &self.pieces_list {
             let board = get_legal_move_board(piece.position_idx, piece._type, piece.white, &self);
-            moves.extend(get_moves_from_move_board(board, piece.position_idx));
+
+            if piece.white {
+                white_moves.extend(get_moves_from_move_board(board, piece.position_idx));
+            } else {
+                black_moves.extend(get_moves_from_move_board(board, piece.position_idx));
+            }
         }
 
-        moves
+        (white_moves, black_moves)
     }
 }
