@@ -8,7 +8,7 @@ use std::arch::x86_64::_pext_u64;
 pub fn pext(blockers: u64, moves: u64) -> u64 {
     if is_x86_feature_detected!("bmi2") {
         unsafe {
-            return _pext_u64(blockers, moves);
+            _pext_u64(blockers, moves)
             // Result: 1001 (Extracts bits 7, 6, 1, and 0 from value)
         }
     } else {
@@ -32,7 +32,7 @@ pub const fn remove_border_rook(board: u64, idx: u8) -> u64 {
     let a: u64 = 0x0101010101010101;
     let h: u64 = a << 7;
     let c1: u64 = 0xFF;
-    let c8: u64 = c1 << 8 * 7;
+    let c8: u64 = c1 << (8 * 7);
 
     let p: u64 = 1 << idx;
     let mut num = 0;
@@ -68,7 +68,7 @@ pub const fn remove_border(board: u64) -> u64 {
     let a: u64 = 0x0101010101010101;
     let h: u64 = a << 7;
     let c1: u64 = 0xFF;
-    let c8: u64 = c1 << 8 * 7;
+    let c8: u64 = c1 << (8 * 7);
 
     let border = a | h | c1 | c8;
 
@@ -97,8 +97,8 @@ pub fn fen_pos_notation_to_sq_index(pos: &str) -> u64 {
         _ => panic!("Invalid position"),
     };
 
-    let idx = (col + row * 8) as u64;
-    idx
+    
+    (col + row * 8) as u64
 }
 
 pub fn fen_positions_to_bitboards(

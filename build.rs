@@ -25,10 +25,10 @@ fn main() {
 
     // Write BLOCKED_ROOK
     out.push_str("pub const BLOCKED_ROOK: [[u64; 4096]; 64] = [\n");
-    for sq in 0..64 {
+    for sq in &blocked_rook {
         out.push_str("    [\n");
-        for blocker in 0..4096 {
-            out.push_str(&format!("        {},\n", blocked_rook[sq][blocker]));
+        for blocker in sq {
+            out.push_str(&format!("        {blocker},\n"));
         }
         out.push_str("    ],\n");
     }
@@ -36,10 +36,10 @@ fn main() {
 
     // Write BLOCKED_BISHOP
     out.push_str("pub const BLOCKED_BISHOP: [[u64; 512]; 64] = [\n");
-    for sq in 0..64 {
+    for sq in &blocked_bishop {
         out.push_str("    [\n");
-        for blocker in 0..512 {
-            out.push_str(&format!("        {},\n", blocked_bishop[sq][blocker]));
+        for blocker in sq {
+            out.push_str(&format!("        {blocker},\n"));
         }
         out.push_str("    ],\n");
     }
@@ -69,7 +69,7 @@ pub const fn remove_border_rook(board: u64, idx: u8) -> u64 {
     let a: u64 = 0x0101010101010101;
     let h: u64 = a << 7;
     let c1: u64 = 0xFF;
-    let c8: u64 = c1 << 8 * 7;
+    let c8: u64 = c1 << (8 * 7);
 
     let p: u64 = 1 << idx;
     let mut num = 0;
@@ -105,7 +105,7 @@ pub const fn remove_border(board: u64) -> u64 {
     let a: u64 = 0x0101010101010101;
     let h: u64 = a << 7;
     let c1: u64 = 0xFF;
-    let c8: u64 = c1 << 8 * 7;
+    let c8: u64 = c1 << (8 * 7);
 
     let border = a | h | c1 | c8;
 
@@ -365,7 +365,7 @@ pub const fn generate_blocked_rook(sq: u64, blockers: u64) -> u64 {
         i -= 1;
         let bit = 1 << (r * 8 + i);
         attacks |= bit;
-        if !((blockers & bit) != 0) {
+        if (blockers & bit) == 0 {
             break;
         }
     }

@@ -73,12 +73,7 @@ pub fn get_moves_from_move_board(mut move_board: u64, idx: u64) -> Vec<Move> {
 
 impl PType {
     pub fn sliding(&self) -> bool {
-        match self {
-            Self::Rook => true,
-            Self::Bishop => true,
-            Self::Queen => true,
-            _ => false,
-        }
+        matches!(self, Self::Rook | Self::Bishop | Self::Queen)
     }
 }
 
@@ -137,7 +132,7 @@ impl State {
         let mut black_moves = Vec::new();
 
         for piece in &self.pieces_list {
-            let board = get_legal_move_board(piece.position_idx, piece._type, piece.white, &self);
+            let board = get_legal_move_board(piece.position_idx, piece._type, piece.white, self);
 
             if piece.white {
                 white_moves.extend(get_moves_from_move_board(board, piece.position_idx));

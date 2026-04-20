@@ -13,23 +13,23 @@ pub fn get_legal_move_board(pos_idx: u64, piece: PType, white: bool, state: &Sta
     match piece {
         PType::Pawn => pawn_moves(pos_idx, white, state),
         PType::Rook => {
-            return BLOCKED_ROOK[pos_idx as usize][pext(
+            BLOCKED_ROOK[pos_idx as usize][pext(
                 state.all_pieces,
                 remove_border_rook(EMPTY_PSEUDO_ROOK[pos_idx as usize], pos_idx as u8),
             ) as usize]
-                & !board.all;
+                & !board.all
         }
         PType::Knight => EMPTY_PSEUDO_KNIGHT[pos_idx as usize] & !board.all,
         PType::Bishop => {
-            return BLOCKED_BISHOP[pos_idx as usize][pext(
+            BLOCKED_BISHOP[pos_idx as usize][pext(
                 state.all_pieces,
                 remove_border(EMPTY_PSEUDO_BISHOP[pos_idx as usize]),
             ) as usize]
-                & !board.all;
+                & !board.all
         }
         PType::King => EMPTY_PSEUDO_KING[pos_idx as usize] & !board.all,
         PType::Queen => {
-            return (BLOCKED_BISHOP[pos_idx as usize][pext(
+            (BLOCKED_BISHOP[pos_idx as usize][pext(
                 state.all_pieces,
                 remove_border(EMPTY_PSEUDO_BISHOP[pos_idx as usize]),
             ) as usize]
@@ -38,7 +38,7 @@ pub fn get_legal_move_board(pos_idx: u64, piece: PType, white: bool, state: &Sta
                     state.all_pieces,
                     remove_border(EMPTY_PSEUDO_ROOK[pos_idx as usize]),
                 ) as usize]
-                    & !board.all);
+                    & !board.all)
         }
     }
 }
